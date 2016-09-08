@@ -83,7 +83,7 @@ public class DirectoryMenuActivity extends AppCompatActivity {
 
         public FileHolder(LayoutInflater inflater, ViewGroup container){
             super(inflater.inflate(R.layout.list_item_file, container, false));
-            mButton = (Button)itemView.findViewById(R.id.list_item_file);
+            mButton = (Button)itemView.findViewById(R.id.list_item_directory);
             mButton.setOnClickListener(this);
         }
 

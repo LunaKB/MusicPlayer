@@ -17,7 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.TextView;
 
 import com.moncrieffe.android.musicplayer.Credentials.Credentials;
 import com.moncrieffe.android.musicplayer.Credentials.CredentialsManager;
@@ -32,14 +34,17 @@ import java.util.concurrent.CountDownLatch;
 import com.moncrieffe.android.musicplayer.Music.MusicController;
 import com.moncrieffe.android.musicplayer.MusicService.MusicBinder;
 
+import wseemann.media.FFmpegMediaMetadataRetriever;
+
 /**
  * Created by Chaz-Rae on 9/6/2016.
  */
-public class FTPFragment extends Fragment implements MediaController.MediaPlayerControl{
+public class MusicListFragment extends Fragment implements MediaController.MediaPlayerControl{
     private CountDownLatch latch = new CountDownLatch(1);
     private static final String TAG = "FTP";
     private ClientFunctions mFtpClient = null;
     private List<String> mFileNames = new ArrayList<>();
+    private List<String> mArtistNames = new ArrayList<>();
     private String mDirectory;
     private UUID mUUID;
     private Credentials mCredentials;
@@ -50,12 +55,12 @@ public class FTPFragment extends Fragment implements MediaController.MediaPlayer
     private MusicController mController;
     private boolean paused=false, playbackPaused=false;
 
-    public static FTPFragment newInstance(String directory, UUID id){
+    public static MusicListFragment newInstance(String directory, UUID id){
         Bundle args = new Bundle();
         args.putString("ARG_STRING", directory);
         args.putSerializable("ARG_ID", id);
 
-        FTPFragment fragment = new FTPFragment();
+        MusicListFragment fragment = new MusicListFragment();
         fragment.setArguments(args);
 
         return fragment;
@@ -114,6 +119,15 @@ public class FTPFragment extends Fragment implements MediaController.MediaPlayer
 
         recyclerView.setAdapter(new FileAdapter());
         mController.setAnchorView(view.findViewById(R.id.ftp_recyclerview));
+
+        for(int a = 0; a < mFileNames.size(); a++){
+            String url = mCredentials.getWebaddress() + mDirectory + "/" + mFileNames.get(a);
+            FFmpegMediaMetadataRetriever mmr = new FFmpegMediaMetadataRetriever();
+            mmr.setDataSource(url);
+            String artist = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ARTIST);
+            mmr.release();
+            mArtistNames.add(artist);
+        }
 
         return view;
     }
@@ -297,21 +311,29 @@ public class FTPFragment extends Fragment implements MediaController.MediaPlayer
 
     /* Recycler View Holder and Adapter */
     private class FileHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private Button mButton;
+        private ImageView mImageView;
+        private TextView mSongTitle;
+        private TextView mSongArtist;
 
         public FileHolder(LayoutInflater inflater, ViewGroup container){
-            super(inflater.inflate(R.layout.list_item_file, container, false));
-            mButton = (Button)itemView.findViewById(R.id.list_item_file);
-            mButton.setOnClickListener(this);
+            super(inflater.inflate(R.layout.list_item_music, container, false));
+            itemView.setOnClickListener(this);
+            mImageView = (ImageView)itemView.findViewById(R.id.song_image);
+            mSongTitle = (TextView)itemView.findViewById(R.id.song_title);
+            mSongArtist = (TextView)itemView.findViewById(R.id.song_artist);
+  //          mButton = (Button)itemView.findViewById(R.id.list_item_file);
+   //         mButton.setOnClickListener(this);
         }
 
-        public void bindFile(String name){
-            mButton.setText(name);
+        public void bindFile(String name, String artist){
+            mSongTitle.setText(name);
+            mSongArtist.setText(artist);
+
         }
 
         @Override
         public void onClick(View v) {
-            int position = mFileNames.indexOf(mButton.getText().toString());
+            int position = mFileNames.indexOf(mSongTitle.getText().toString());
             mMusicSrv.setSong(position);
             mMusicSrv.playSong();
             if(playbackPaused){
@@ -336,7 +358,9 @@ public class FTPFragment extends Fragment implements MediaController.MediaPlayer
         @Override
         public void onBindViewHolder(FileHolder holder, int position) {
             String filename = mFileNames.get(position);
-            holder.bindFile(filename);
+            String artistname = mArtistNames.get(position);
+
+            holder.bindFile(filename, artistname);
         }
 
         @Override

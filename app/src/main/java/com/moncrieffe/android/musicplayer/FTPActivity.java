@@ -3,13 +3,8 @@ package com.moncrieffe.android.musicplayer;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class FTPActivity extends SingleFragmentActivity{
@@ -27,6 +22,6 @@ public class FTPActivity extends SingleFragmentActivity{
     protected Fragment createFragment() {
         mDirectory = getIntent().getStringExtra("DIRECTORY");
         mUUID = (UUID)getIntent().getSerializableExtra("ID");
-        return FTPFragment.newInstance(mDirectory, mUUID);
+        return MusicListFragment.newInstance(mDirectory, mUUID);
     }
 }
