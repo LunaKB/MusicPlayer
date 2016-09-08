@@ -12,5 +12,6 @@ Plays music from web server.
  
  http://zanailhan.blogspot.com/2012/03/android-connect-to-ftp-server-example.html
  
+ https://github.com/wseemann/FFmpegMediaMetadataRetriever
  
  Currently uses ftp server
