@@ -14,4 +14,6 @@ Plays music from web server.
  
  https://github.com/wseemann/FFmpegMediaMetadataRetriever
  
- Currently uses ftp server
+ http://stackoverflow.com/questions/2922210/reading-text-file-from-server-on-android
+ 
+ Currently uses web server, long song list loading times
