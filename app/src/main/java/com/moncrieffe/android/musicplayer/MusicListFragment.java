@@ -94,6 +94,16 @@ public class MusicListFragment extends Fragment implements MediaController.Media
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mRun = new RunnableFunctions(mFtpClient);
+        try {
+            RunnableFunctions.ReadFile file = mRun.new ReadFile(mUUID, getActivity(), mDirectory);
+            new Thread(file).start();
+            file.l.await();
+            mFileNames = file.getList();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+ /*       mRun = new RunnableFunctions(mFtpClient);
         RunnableFunctions.FTPConnect connect = mRun.new FTPConnect(mUUID, getContext());
         RunnableFunctions.FTPChangeDirectory changeDirectory = mRun.new FTPChangeDirectory(mDirectory);
         RunnableFunctions.FTPGetFileNames getFileNames = mRun.new FTPGetFileNames();
@@ -115,7 +125,7 @@ public class MusicListFragment extends Fragment implements MediaController.Media
         }
         catch (Exception e){
             Log.e(TAG, "Interrupted");
-        }
+        } */
 
         recyclerView.setAdapter(new FileAdapter());
         mController.setAnchorView(view.findViewById(R.id.ftp_recyclerview));
@@ -342,6 +352,7 @@ public class MusicListFragment extends Fragment implements MediaController.Media
             }
 
             mController.show();
+
  /*           String url = mCredentials.getWebaddress() + mDirectory + "/" + mButton.getText().toString(); // your URL here
            Intent i = MusicActivity.newIntent(getActivity(), url);
            startActivity(i); */

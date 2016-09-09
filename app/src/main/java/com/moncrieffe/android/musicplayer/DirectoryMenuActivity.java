@@ -12,12 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.moncrieffe.android.musicplayer.Credentials.Credentials;
+import com.moncrieffe.android.musicplayer.Credentials.CredentialsManager;
 import com.moncrieffe.android.musicplayer.FTP.ClientFunctions;
 import com.moncrieffe.android.musicplayer.FTP.RunnableFunctions;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 
 /**
@@ -45,7 +51,19 @@ public class DirectoryMenuActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.ftp_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(DirectoryMenuActivity.this));
+        mRun = new RunnableFunctions(mFtpClient);
 
+        try {
+            RunnableFunctions.ReadDirectory file = mRun.new ReadDirectory(
+                    UUID.fromString("e8eabaf8-de77-4d16-acae-7c7269cc5d5e"), DirectoryMenuActivity.this);
+            new Thread(file).start();
+            file.l.await();
+            mDirectoryNames = file.getList();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+   /*
         mRun = new RunnableFunctions(mFtpClient);
         RunnableFunctions.FTPConnect connect;
         try {
@@ -70,10 +88,9 @@ public class DirectoryMenuActivity extends AppCompatActivity {
         }
         catch (Exception e){
             Log.e(TAG, "Interrupted");
-        }
+        }*/
 
         recyclerView.setAdapter(new FileAdapter());
-
 
     }
 
