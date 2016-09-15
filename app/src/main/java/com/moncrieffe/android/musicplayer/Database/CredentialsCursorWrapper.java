@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 
 import com.moncrieffe.android.musicplayer.Credentials.Credentials;
-import com.moncrieffe.android.musicplayer.Database.CredentialsDbSchema.CredentialsTable;
+import com.moncrieffe.android.musicplayer.Database.DbSchema.CredentialsTable;
 
 import java.util.UUID;
 
@@ -18,13 +18,14 @@ public class CredentialsCursorWrapper extends CursorWrapper {
 
     public Credentials getCredentials(){
         String id = getString(getColumnIndex(CredentialsTable.Cols.ID));
-        String ipaddress = getString(getColumnIndex(CredentialsTable.Cols.IPADDRESS));
+ /*       String ipaddress = getString(getColumnIndex(CredentialsTable.Cols.IPADDRESS));
         String username = getString(getColumnIndex(CredentialsTable.Cols.USERNAME));
         String password = getString(getColumnIndex(CredentialsTable.Cols.PASSWORD));
-        int port = getInt(getColumnIndex(CredentialsTable.Cols.PORT));
+        int port = getInt(getColumnIndex(CredentialsTable.Cols.PORT)); */
         String webaddress = getString(getColumnIndex(CredentialsTable.Cols.WEBADDRESS));
 
-        Credentials c = new Credentials(UUID.fromString(id), ipaddress, username, password, port, webaddress);
+  //      Credentials c = new Credentials(UUID.fromString(id), ipaddress, username, password, port, webaddress);
+        Credentials c = new Credentials(UUID.fromString(id), webaddress);
         return c;
 
     }

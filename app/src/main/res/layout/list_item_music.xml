@@ -28,4 +28,13 @@
         android:layout_marginLeft="10dp"
         android:text="Song Artist"/>
 
+    <TextView
+        android:id="@+id/song_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/song_image"
+        android:layout_below="@id/song_artist"
+        android:layout_marginLeft="10dp"
+        android:text="Song Album"/>
+
 </RelativeLayout>

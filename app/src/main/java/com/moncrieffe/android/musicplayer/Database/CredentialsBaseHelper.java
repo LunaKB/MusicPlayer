@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.moncrieffe.android.musicplayer.Database.CredentialsDbSchema.CredentialsTable;
+import com.moncrieffe.android.musicplayer.Database.DbSchema.CredentialsTable;
 
 /**
  * Created by Chaz-Rae on 9/7/2016.
@@ -22,10 +22,10 @@ public class CredentialsBaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table " + CredentialsTable.NAME+ "(" +
                 "_id integer primary key autoincrement, " +
                 CredentialsTable.Cols.ID + ", " +
-                CredentialsTable.Cols.IPADDRESS + ", " +
+ /*               CredentialsTable.Cols.IPADDRESS + ", " +
                 CredentialsTable.Cols.USERNAME + ", " +
                 CredentialsTable.Cols.PASSWORD + ", " +
-                CredentialsTable.Cols.PORT + ", " +
+                CredentialsTable.Cols.PORT + ", " + */
                 CredentialsTable.Cols.WEBADDRESS + ")"
         );
     }

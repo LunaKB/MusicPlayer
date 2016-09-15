@@ -40,7 +40,7 @@ public class RunnableFunctions {
             // host – your FTP address
             // username & password – for your secured login
             // 21 default gateway for FTP
-            status = mFtp.ftpConnect(c.getIpaddress(), c.getUsername(), c.getPassword(), c.getPort());
+    //        status = mFtp.ftpConnect(c.getIpaddress(), c.getUsername(), c.getPassword(), c.getPort());
             if (status == true) {
                 Log.d(TAG, "Connection Success");
             } else {
@@ -94,6 +94,7 @@ public class RunnableFunctions {
         }
     }
 
+    /* HTTP Functions */
     public class ReadFile implements Runnable{
         private UUID id;
         private List<String> strings = new ArrayList<>();

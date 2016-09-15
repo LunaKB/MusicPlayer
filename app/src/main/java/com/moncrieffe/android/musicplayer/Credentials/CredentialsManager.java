@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.moncrieffe.android.musicplayer.Database.CredentialsBaseHelper;
 import com.moncrieffe.android.musicplayer.Database.CredentialsCursorWrapper;
-import com.moncrieffe.android.musicplayer.Database.CredentialsDbSchema.CredentialsTable;
+import com.moncrieffe.android.musicplayer.Database.DbSchema.CredentialsTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,10 +96,10 @@ public class CredentialsManager {
     private static ContentValues getContentValues(Credentials credentials){
         ContentValues values = new ContentValues();
         values.put(CredentialsTable.Cols.ID, credentials.getID().toString());
-        values.put(CredentialsTable.Cols.IPADDRESS, credentials.getIpaddress());
+/*        values.put(CredentialsTable.Cols.IPADDRESS, credentials.getIpaddress());
         values.put(CredentialsTable.Cols.USERNAME , credentials.getUsername());
         values.put(CredentialsTable.Cols.PASSWORD, credentials.getPassword());
-        values.put(CredentialsTable.Cols.PORT, Integer.toString(credentials.getPort()));
+        values.put(CredentialsTable.Cols.PORT, Integer.toString(credentials.getPort())); */
         values.put(CredentialsTable.Cols.WEBADDRESS, credentials.getWebaddress());
 
         return values;

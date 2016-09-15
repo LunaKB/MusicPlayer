@@ -16,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
@@ -32,6 +31,8 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import com.moncrieffe.android.musicplayer.Music.MusicController;
+import com.moncrieffe.android.musicplayer.Music.Song;
+import com.moncrieffe.android.musicplayer.Music.SongManager;
 import com.moncrieffe.android.musicplayer.MusicService.MusicBinder;
 
 import wseemann.media.FFmpegMediaMetadataRetriever;
@@ -54,6 +55,8 @@ public class MusicListFragment extends Fragment implements MediaController.Media
     private boolean musicBound=false;
     private MusicController mController;
     private boolean paused=false, playbackPaused=false;
+    private RecyclerView mRecyclerView;
+    private FileAdapter mAdapter;
 
     public static MusicListFragment newInstance(String directory, UUID id){
         Bundle args = new Bundle();
@@ -90,10 +93,10 @@ public class MusicListFragment extends Fragment implements MediaController.Media
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_ftp, container, false);
-        RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.ftp_recyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView = (RecyclerView)view.findViewById(R.id.ftp_recyclerview);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mRun = new RunnableFunctions(mFtpClient);
+  /*      mRun = new RunnableFunctions(mFtpClient);
         try {
             RunnableFunctions.ReadFile file = mRun.new ReadFile(mUUID, getActivity(), mDirectory);
             new Thread(file).start();
@@ -101,45 +104,41 @@ public class MusicListFragment extends Fragment implements MediaController.Media
             mFileNames = file.getList();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-
- /*       mRun = new RunnableFunctions(mFtpClient);
-        RunnableFunctions.FTPConnect connect = mRun.new FTPConnect(mUUID, getContext());
-        RunnableFunctions.FTPChangeDirectory changeDirectory = mRun.new FTPChangeDirectory(mDirectory);
-        RunnableFunctions.FTPGetFileNames getFileNames = mRun.new FTPGetFileNames();
-        RunnableFunctions.FTPDisconnect disconnect = mRun.new FTPDisconnect();
-
-        try {
-            new Thread(connect).start();
-            connect.l.await();
-
-            new Thread(changeDirectory).start();
-            changeDirectory.l.await();
-
-            new Thread(getFileNames).start();
-            getFileNames.l.await();
-            mFileNames = getFileNames.getStrings();
-
-            new Thread(disconnect).start();
-            disconnect.l.await();
-        }
-        catch (Exception e){
-            Log.e(TAG, "Interrupted");
         } */
 
-        recyclerView.setAdapter(new FileAdapter());
+       updateUI();
         mController.setAnchorView(view.findViewById(R.id.ftp_recyclerview));
 
-        for(int a = 0; a < mFileNames.size(); a++){
+ /*       for(int a = 0; a < mFileNames.size(); a++){
             String url = mCredentials.getWebaddress() + mDirectory + "/" + mFileNames.get(a);
             FFmpegMediaMetadataRetriever mmr = new FFmpegMediaMetadataRetriever();
             mmr.setDataSource(url);
             String artist = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ARTIST);
+            String album = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ALBUM);
             mmr.release();
             mArtistNames.add(artist);
-        }
+        } */
 
         return view;
+    }
+
+    private void updateUI(){
+        SongManager songManager = SongManager.get(getActivity());
+        List<Song> songs = createSongList(songManager);
+        if(mAdapter == null) {
+
+            mAdapter = new FileAdapter(songs);
+            mRecyclerView.setAdapter(mAdapter);
+        }
+        else{
+            mAdapter.setFiles(songs);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private List<Song> createSongList(SongManager songManager){
+        List<Song> s =songManager.getSongs(mDirectory);
+        return s;
     }
 
     @Override
@@ -324,6 +323,7 @@ public class MusicListFragment extends Fragment implements MediaController.Media
         private ImageView mImageView;
         private TextView mSongTitle;
         private TextView mSongArtist;
+        private TextView mSongAlbum;
 
         public FileHolder(LayoutInflater inflater, ViewGroup container){
             super(inflater.inflate(R.layout.list_item_music, container, false));
@@ -331,14 +331,13 @@ public class MusicListFragment extends Fragment implements MediaController.Media
             mImageView = (ImageView)itemView.findViewById(R.id.song_image);
             mSongTitle = (TextView)itemView.findViewById(R.id.song_title);
             mSongArtist = (TextView)itemView.findViewById(R.id.song_artist);
-  //          mButton = (Button)itemView.findViewById(R.id.list_item_file);
-   //         mButton.setOnClickListener(this);
+            mSongAlbum = (TextView)itemView.findViewById(R.id.song_album);
         }
 
-        public void bindFile(String name, String artist){
+        public void bindFile(String name, String artist, String album){
             mSongTitle.setText(name);
             mSongArtist.setText(artist);
-
+            mSongAlbum.setText(album);
         }
 
         @Override
@@ -352,14 +351,16 @@ public class MusicListFragment extends Fragment implements MediaController.Media
             }
 
             mController.show();
-
- /*           String url = mCredentials.getWebaddress() + mDirectory + "/" + mButton.getText().toString(); // your URL here
-           Intent i = MusicActivity.newIntent(getActivity(), url);
-           startActivity(i); */
         }
     }
 
     private class FileAdapter extends RecyclerView.Adapter<FileHolder>{
+        private List<Song> mStrings;
+
+        public FileAdapter(List<Song> files){
+            mStrings = files;
+        }
+
         @Override
         public FileHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -368,16 +369,21 @@ public class MusicListFragment extends Fragment implements MediaController.Media
 
         @Override
         public void onBindViewHolder(FileHolder holder, int position) {
-            String filename = mFileNames.get(position);
-            String artistname = mArtistNames.get(position);
+            String filename = mStrings.get(position).getName();
+            String artistname = mStrings.get(position).getArtist();
+            String albumname = mStrings.get(position).getAlbum();
 
-            holder.bindFile(filename, artistname);
+            holder.bindFile(filename, artistname, albumname);
         }
 
         @Override
         public int getItemCount() {
-            Log.d(TAG, "The size is " + mFileNames.size());
-            return mFileNames.size();
+            Log.d(TAG, "The size is " + mStrings.size());
+            return mStrings.size();
+        }
+
+        public void setFiles(List<Song> files){
+            mStrings = files;
         }
     }
 }

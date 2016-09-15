@@ -13,7 +13,7 @@ public class Credentials {
     private int mPort;
     private String mWebaddress;
 
-    public Credentials(String ip, String user, String password, int portNum, String web){
+ /*   public Credentials(String ip, String user, String password, int portNum, String web){
         mID = UUID.fromString("e8eabaf8-de77-4d16-acae-7c7269cc5d5e");
         mIpaddress = ip;
         mUsername = user;
@@ -29,13 +29,23 @@ public class Credentials {
         mPassword = password;
         mPort = portNum;
         mWebaddress = web;
+    } */
+
+    public Credentials(String  web){
+        mID = UUID.fromString("e8eabaf8-de77-4d16-acae-7c7269cc5d5e");
+        mWebaddress = web;
+    }
+
+    public Credentials(UUID id, String web){
+        mID = id;
+        mWebaddress = web;
     }
 
     public UUID getID() {
         return mID;
     }
 
-    public String getIpaddress() {
+ /*   public String getIpaddress() {
         return mIpaddress;
     }
 
@@ -65,7 +75,7 @@ public class Credentials {
 
     public void setPort(int port) {
         mPort = port;
-    }
+    } */
 
     public String getWebaddress() {
         return mWebaddress;

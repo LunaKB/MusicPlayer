@@ -8,9 +8,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
-import java.util.Random;
-import android.app.Notification;
-import android.app.PendingIntent;
 
 import java.util.List;
 import java.util.UUID;
